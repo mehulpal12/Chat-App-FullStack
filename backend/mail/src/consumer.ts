@@ -1,10 +1,16 @@
 import amqp from "amqplib";
 import dotenv from "dotenv";
-import sgMail from "@sendgrid/mail";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.USER,
+        pass: process.env.PASSWORD,
+    },
+});
 
 export const startSentOtpConsumer = async () => {
     try {
@@ -22,7 +28,7 @@ export const startSentOtpConsumer = async () => {
         await channel.assertQueue(queueName, { durable: true });
         channel.prefetch(1);
 
-        console.log("✅ Mail service (SendGrid) started");
+        console.log("✅ Mail service (Gmail SMTP) started");
 
         channel.consume(queueName, async (msg) => {
             if (!msg) return;
@@ -36,9 +42,9 @@ export const startSentOtpConsumer = async () => {
                     throw new Error("Invalid message");
                 }
 
-                await sgMail.send({
+                await transporter.sendMail({
+                    from: process.env.USER,
                     to,
-                    from: process.env.EMAIL_FROM!,
                     subject,
                     text,
                 });
