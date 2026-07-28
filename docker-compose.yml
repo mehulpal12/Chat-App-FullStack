@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: chat-app-mern-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  redis:
+    image: redis:alpine
+    container_name: chat-app-mern-redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: chat-app-mern-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+
+  user-service:
+    build:
+      context: ./backend/user
+      dockerfile: Dockerfile
+    container_name: chat-app-mern-user-service
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      MONGODB_URI: mongodb://mongodb:27017/Chat-app-microservices
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASSWORD: admin123
+      JWT_SECRET: sidsfndsdskncic651
+    depends_on:
+      - mongodb
+      - redis
+      - rabbitmq
+
+  mail-service:
+    build:
+      context: ./backend/mail
+      dockerfile: Dockerfile
+    container_name: chat-app-mern-mail-service
+    ports:
+      - "4001:4001"
+    environment:
+      PORT: 4001
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: admin
+      RABBITMQ_PASSWORD: admin123
+      USER: mehulpal7678@gmail.com
+      PASSWORD: zirfbkvfaqqobtwp
+      EMAIL_FROM: mehulpal7678@gmail.com
+    depends_on:
+      - rabbitmq
+
+  chat-service:
+    build:
+      context: ./backend/chat
+      dockerfile: Dockerfile
+    container_name: chat-app-mern-chat-service
+    ports:
+      - "4002:4002"
+    environment:
+      PORT: 4002
+      MONGODB_URI: mongodb://mongodb:27017/Chat-app-microservices
+      JWT_SECRET: sidsfndsdskncic651
+      USER_SERVICE_URL: http://user-service:4000
+      OPENAI_API_KEY: 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
+      CLOUDINARY_CLOUD_NAME: dk1c6esmv
+      CLOUDINARY_API_KEY: 713988794186623
+      CLOUDINARY_API_SECRET: iE8g1XyyyJlMemsY7V5_AtmSjI4
+    depends_on:
+      - mongodb
+      - user-service
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: chat-app-mern-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - user-service
+      - mail-service
+      - chat-service
+
+volumes:
+  mongo-data:

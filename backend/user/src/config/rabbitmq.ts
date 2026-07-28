@@ -28,7 +28,8 @@ export const connectRabbitMQ = async () => {
 
         console.log("✅ RabbitMQ connected");
     } catch (error) {
-        console.error("failed to connect to RabbitMQ", error);
+        console.error("failed to connect to RabbitMQ, retrying in 5s...", error);
+        setTimeout(connectRabbitMQ, 5000);
     }
 };
 
