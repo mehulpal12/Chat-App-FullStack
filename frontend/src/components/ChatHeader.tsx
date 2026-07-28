@@ -1,5 +1,5 @@
 import { User } from '@/context/AppContext';
-import { Menu, UserCircle, } from 'lucide-react';
+import { Menu, UserCircle, ArrowLeft } from 'lucide-react';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -28,7 +28,7 @@ const ChatHeader = ({ user, setSidebarOpen, isTyping, selectedUser, onlineUsers 
       </div>
 
       {/* Header content - Glassmorphism look */}
-      <header className='px-6 py-4 border-b border-white/5 bg-[#0B0E14]/60 backdrop-blur-xl sticky top-0 z-20'>
+      <header className='px-4 sm:px-6 py-3 sm:py-4 border-b border-white/5 bg-[#0B0E14]/60 backdrop-blur-xl sticky top-0 z-20'>
         <div className='flex items-center justify-between'>
           <AnimatePresence mode="wait">
             {user ? (
@@ -37,18 +37,26 @@ const ChatHeader = ({ user, setSidebarOpen, isTyping, selectedUser, onlineUsers 
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -5 }}
-                className='flex items-center gap-4'
+                className='flex items-center gap-2 sm:gap-4'
               >
+                {/* Back button on mobile */}
+                <button
+                  onClick={() => setSidebarOpen(true)}
+                  className="sm:hidden p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+
                 {/* Avatar Section */}
-                <div className="relative">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border border-white/10 shadow-inner">
-                    <span className='text-white font-bold text-lg'>
+                <div className="relative shrink-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center border border-white/10 shadow-inner">
+                    <span className='text-white font-bold text-base sm:text-lg'>
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   
                   {isOnline && (
-                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-[3px] border-[#0B0E14]">
+                    <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-green-500 rounded-full border-[3px] border-[#0B0E14]">
                       <span className='absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75'></span>
                     </div>
                   )}

@@ -206,7 +206,7 @@ export const sendMessage = tryCatch(async (req: AuthenticatedRequest, res: Respo
   }
 
   if (isRecieverInChatRoom && senderSocketId) {
-    io.to(senderSocketId).emit("messageSeen", {
+    io.to(senderSocketId).emit("messagesSeen", {
       chatId: chatId,
       seenBy: otherUserId,
       messageIds: [savedMessage._id]
@@ -287,7 +287,7 @@ export const getMessagesbyChat = tryCatch(
     const unseenMessageIds = messages
       .filter(
         (msg) =>
-          msg.sender.toString() !== userId.toString() && !msg.seenBy
+          msg.sender.toString() !== userId.toString() && !msg.seen
       )
       .map((msg) => msg._id);
 

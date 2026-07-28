@@ -32,7 +32,7 @@ const MessageInput = ({ selectedUser, message, setMessage, handleMessageSend }: 
   if (!selectedUser) return null;
 
   return (
-    <div className="p-4 bg-[#0B0E14] border-t border-white/5">
+    <div className="p-3 sm:p-4 bg-[#0B0E14] border-t border-white/5">
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto flex flex-col gap-3">
         
         {/* Image Preview Area */}
@@ -48,7 +48,7 @@ const MessageInput = ({ selectedUser, message, setMessage, handleMessageSend }: 
                 <img
                   src={URL.createObjectURL(imageFile)}
                   alt="preview"
-                  className="w-32 h-32 object-cover transition-transform duration-300 group-hover:scale-110"
+                  className="w-24 h-24 sm:w-32 sm:h-32 object-cover transition-transform duration-300 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
               </div>
@@ -67,15 +67,15 @@ const MessageInput = ({ selectedUser, message, setMessage, handleMessageSend }: 
         </AnimatePresence>
 
         {/* Input Control Area */}
-        <div className="flex items-end gap-2 bg-[#1E232B] p-2 rounded-2xl border border-white/5 focus-within:border-blue-500/50 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all duration-300">
+        <div className="flex items-end gap-1.5 sm:gap-2 bg-[#1E232B] p-1.5 sm:p-2 rounded-2xl border border-white/5 focus-within:border-blue-500/50 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all duration-300">
           
           {/* File Upload Button */}
           <motion.label
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="cursor-pointer p-2.5 rounded-xl bg-white/5 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+            className="cursor-pointer p-2 sm:p-2.5 rounded-xl bg-white/5 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all shrink-0"
           >
-            <Paperclip size={22} />
+            <Paperclip size={20} className="sm:w-[22px] sm:h-[22px]" />
             <input
               type="file"
               accept="image/*"
@@ -97,11 +97,11 @@ const MessageInput = ({ selectedUser, message, setMessage, handleMessageSend }: 
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={imageFile ? "Add a caption..." : "Write a message..."}
-            className="flex-1 bg-transparent border-none py-3 px-2 text-gray-100 placeholder:text-gray-500 focus:outline-none text-[15px]"
+            className="flex-1 bg-transparent border-none py-2 sm:py-3 px-1 sm:px-2 text-gray-100 placeholder:text-gray-500 focus:outline-none text-[14px] sm:text-[15px]"
           />
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <AnimatePresence>
               {(message.trim() || imageFile) && (
                 <motion.button
@@ -112,7 +112,7 @@ const MessageInput = ({ selectedUser, message, setMessage, handleMessageSend }: 
                   whileTap={{ scale: 0.95 }}
                   disabled={isUploading}
                   type="submit"
-                  className="p-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center min-w-[48px]"
+                  className="p-2.5 sm:p-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center min-w-[40px] sm:min-w-[48px]"
                 >
                   {isUploading ? (
                     <Loader2 size={20} className="animate-spin" />

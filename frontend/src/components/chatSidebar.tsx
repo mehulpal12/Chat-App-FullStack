@@ -1,5 +1,5 @@
 import { Chats, User } from '@/context/AppContext';
-import { CornerDownRight, CornerUpLeft, LogOut, MessageCircle, Plus, Search, X, Users, Hash } from 'lucide-react';
+import { CornerDownRight, CornerUpLeft, LogOut, MessageCircle, Plus, Search, X, Users, Hash, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -63,6 +63,13 @@ const ChatSidebar = ({
       <div className='p-4 border-b border-white/5'>
         <div className='flex items-center justify-between mb-2'>
           <div className='flex items-center gap-3'>
+            {/* Close button on mobile */}
+            <button
+              onClick={() => setSidebarOpen(false)}
+              className="sm:hidden p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+            >
+              <ArrowLeft size={16} />
+            </button>
             <div className='p-2 rounded-xl bg-blue-500/10'>
               <MessageCircle className='w-5 h-5 text-blue-400' />
             </div>

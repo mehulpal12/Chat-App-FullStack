@@ -1,6 +1,8 @@
 import { Server,Socket } from "socket.io";
 import http from "http";
 import express from "express";
+import { Messages } from "../models/messages.js";
+import { Chat } from "../models/Chat.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -67,6 +69,45 @@ io.on("connection", (socket:Socket) => {
     socket.on("leaveChat", (chatId) => {
         socket.leave(chatId);
         console.log(`User ${socket.id} left chat ${chatId}`);
+    });
+
+    socket.on("markAsSeen", async (data: { chatId: string; userId: string }) => {
+        const { chatId, userId } = data;
+        if (!chatId || !userId) return;
+
+        try {
+            const unseenMessages = await Messages.find({
+                chatId,
+                sender: { $ne: userId },
+                seen: false
+            });
+
+            if (unseenMessages.length > 0) {
+                const unseenMessageIds = unseenMessages.map(msg => msg._id);
+
+                await Messages.updateMany(
+                    { _id: { $in: unseenMessageIds } },
+                    { $set: { seen: true, seenAt: new Date() } }
+                );
+
+                const chat = await Chat.findById(chatId);
+                if (chat) {
+                    const otherUserId = chat.users.find(id => id.toString() !== userId.toString());
+                    if (otherUserId) {
+                        const otherUserSocketId = getReciverSocketId(otherUserId.toString());
+                        if (otherUserSocketId) {
+                            io.to(otherUserSocketId).emit("messagesSeen", {
+                                chatId,
+                                seenBy: userId,
+                                messageIds: unseenMessageIds
+                            });
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error in markAsSeen socket handler:", error);
+        }
     });
 
     socket.on("connect_error", (err) => {

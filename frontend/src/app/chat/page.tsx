@@ -2,6 +2,7 @@
 
 import { User, chat_service, useAppData } from "@/context/AppContext";
 import React, { useEffect, useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Loading from "@/components/Loading";
 import { useRouter } from "next/navigation";
 import ChatSidebar from "@/components/chatSidebar";
@@ -44,7 +45,7 @@ const ChatApp = () => {
 
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
   const [messages, setMessages] = useState<Message[] | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
@@ -358,6 +359,8 @@ const ChatApp = () => {
         userId: loggedInUser?._id,
       });
 
+      // Auto-close sidebar on mobile when a chat is selected
+      setSidebarOpen(false);
 
       return () => {
         socket?.emit("leaveChat", selectedUser);
@@ -377,7 +380,20 @@ const ChatApp = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="h-screen bg-[#05070D] text-white overflow-hidden flex relative">
+    <div className="h-screen h-[100dvh] bg-[#05070D] text-white overflow-hidden flex relative">
+      {/* Backdrop overlay for mobile sidebar */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.4 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="sm:hidden fixed inset-0 bg-black/60 z-20 backdrop-blur-sm"
+          />
+        )}
+      </AnimatePresence>
+
       <ChatSidebar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
@@ -394,7 +410,7 @@ const ChatApp = () => {
         createChat={createChat}
         onlineUsers={onlineUsers}
       />
-      <div className="flex-1 flex flex-col justify-between backdrop-blur-xl bg-white/5 border-2 border-white/10 rounded-lg">
+      <div className="flex-1 flex flex-col justify-between backdrop-blur-xl bg-white/5 sm:border-2 sm:border-white/10 sm:rounded-lg rounded-none border-none h-full overflow-hidden">
         <ChatHeader
           user={user}
           setSidebarOpen={setSidebarOpen}
@@ -407,17 +423,22 @@ const ChatApp = () => {
           messages={messages}
           loggedInUser={loggedInUser}
         />
-        <div className="flex gap-2 mb-2">
-          {suggestions.map((s, i) => (
-            <button
-              key={i}
-              onClick={() => setMessage(s)}
-              className="bg-gray-700 px-3 py-1 rounded-full text-sm"
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+        
+        {/* Reply Suggestions - Scrollable and responsive */}
+        {suggestions.length > 0 && (
+          <div className="flex gap-1.5 sm:gap-2 px-4 py-2 overflow-x-auto no-scrollbar max-w-full">
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => setMessage(s)}
+                className="inline-flex items-center justify-center bg-white/5 border border-white/10 hover:bg-white/15 text-gray-200 hover:text-white px-3 sm:px-3.5 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 hover:border-white/20 active:scale-95 whitespace-nowrap flex-shrink-0 shadow-sm"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+
         <MessageInput
           selectedUser={selectedUser}
           message={message}

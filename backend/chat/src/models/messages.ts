@@ -9,6 +9,8 @@ export interface IMessage extends Document {
     publicId: string;
   };
   messageType: "text" | "image";
+  seen: boolean;
+  seenAt?: Date;
   seenBy: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
@@ -51,6 +53,15 @@ const schema = new Schema<IMessage>(
         ref: "User",
       },
     ],
+
+    seen: {
+      type: Boolean,
+      default: false,
+    },
+
+    seenAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
