@@ -37,6 +37,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/user", userRoutes);
 
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "OK", service: "user-service" });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

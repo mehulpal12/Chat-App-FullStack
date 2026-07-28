@@ -16,6 +16,10 @@ app.use(cors());
 app.use("/api/v1", chatRoutes)
 app.use("/api/v1/group", groupRoutes);
 
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "OK", service: "chat-service" });
+});
+
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
